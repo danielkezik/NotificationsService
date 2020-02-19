@@ -86,7 +86,7 @@ async def notification_sender(websocket, path):
         await unregister(websocket)
 
 init_websites()
-start_server = websockets.serve(notification_sender, "localhost", 8765)
+start_server = websockets.serve(notification_sender, "localhost", 8102)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
 

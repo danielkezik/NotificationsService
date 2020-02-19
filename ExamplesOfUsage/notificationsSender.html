@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send notifications demo</title>
+    <script src="../NotificationsServer.js"></script>
+</head>
+<body>
+
+    <script>
+        //NotificationsServerConfig.wsServer = "http://mysite.com:8101/";
+        var notificationsServer = new NotificationsServer('site.com', 'qwerty1234');
+        notificationsServer.callback = (response) => {
+            document.getElementById("demo").innerHTML = response;
+        }
+        function sendNotif() {
+            notificationsServer.sendNotificationByUid(1, document.getElementById("notificationMessage").value);
+        }
+    </script>
+    <div>
+        <h2>Notifications sender</h2>
+        <input type="text" id="notificationMessage" value="Hello from JS server sender!!!"/><br/>
+        <button type="button" onclick="sendNotif()">Send notification</button>
+    </div>
+    Result:
+    <div id="demo"></div>
+
+</body>
+</html>

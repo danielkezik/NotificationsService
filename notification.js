@@ -1,10 +1,10 @@
-var NotificationClientConfig = {
-    wsServer: "ws://localhost:8765/"
+var NotificationsClientConfig = {
+    wsServer: "ws://localhost:8102/"
 }
 
-class NotificationClient {
+class NotificationsClient {
     constructor(website, uid = null) {
-        this.websocket = new WebSocket(NotificationClientConfig.wsServer);
+        this.websocket = new WebSocket(NotificationsClientConfig.wsServer);
         this.websocket.onopen = () => this.registerAllUidsAndUclasses();
         this.uclasses = [];
         this.website = website;

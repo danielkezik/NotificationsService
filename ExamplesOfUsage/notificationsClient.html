@@ -5,15 +5,16 @@
 
         <title>Notification demo</title>
         
-        <script src="notification.js"></script>
+        <script src="../notification.js"></script>
         <style type="text/css">
         </style>
     </head>
     <body>
         <script>
-            var notificationClient = new NotificationClient("site.com");
-            notificationClient.uid = 1;
-            notificationClient.addClass("player");
+            //NotificationsClientConfig.wsServer = "ws://mysite.com:8102/";
+            var notificationsClient = new NotificationsClient("site.com");
+            notificationsClient.uid = 1;
+            notificationsClient.addClass("player");
         </script>
     </body>
 </html>

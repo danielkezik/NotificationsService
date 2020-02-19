@@ -1,9 +1,10 @@
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 import asyncio
 import websockets
 import json
 
-uri = "ws://localhost:8765"
+uri = "ws://localhost:8102"
 
 async def send_notification(website, token, uid, notification):
     async with websockets.connect(uri) as websocket:
@@ -29,8 +30,11 @@ async def send_notifications(website, token, uclass, notification):
         await websocket.send(json.dumps(msg))
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET','POST'])
+@cross_origin()
 def result():
     rv = request.values
     if ("website" in rv) and ("token" in rv):
@@ -42,5 +46,5 @@ def result():
             return json.dumps({"result":"sent"})
     return json.dumps({"result":"unknown"})
 
-app.debug = True
-app.run(host = 'localhost', port=8764)
+#app.debug = True
+app.run(host = 'localhost', port=8101)
