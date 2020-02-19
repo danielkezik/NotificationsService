@@ -5,6 +5,8 @@ var NotificationClientConfig = {
 class NotificationClient {
     constructor(website, uid = null) {
         this.websocket = new WebSocket(NotificationClientConfig.wsServer);
+        this.websocket.onopen = () => this.registerAllUidsAndUclasses();
+        this.uclasses = [];
         this.website = website;
         if (uid != null) {
             this.setUid(uid);
@@ -20,50 +22,57 @@ class NotificationClient {
         return this.userid;
     }
 
-    setUid(uid) {
-        var tmpSetUid = () => {
-            this.userid = uid.toString();
+    websocketSend = {
+        registerUid : (uid) => {
+            this.websocketSend.wasOpen = true;
             this.websocket.send(
                 JSON.stringify(
                     { 
                         action: 'register_uid',
                         website: this.website,
-                        uid: this.userid
+                        uid: uid
                     }
                 )
             );
-        };
-        if (this.websocket.readyState != WebSocket.OPEN) {
-            this.websocket.onopen = () => tmpSetUid();
-        } else {
-            tmpSetUid();
+        },
+        registerUclass : (uclass) => {
+            this.websocketSend.wasOpen = true;
+            this.websocket.send(
+                JSON.stringify(
+                    {
+                        action: 'register_uclass',
+                        website: this.website,
+                        uclass: uclass
+                    }
+                )
+            );
+        },
+        wasOpen : false
+    }
+
+    setUid(uid) {
+        this.userid = uid.toString();
+        if (this.websocket.readyState == WebSocket.OPEN) {
+            this.websocketSend.registerUid(this.userid);
         }
     }
 
     addClass(uclass) {
-        var tmpAddClass = () => {
-            if (! ('uclasses' in this)) {
-                this.uclasses = [];
+        uclass = uclass.toString();
+        if (! this.uclasses.includes(uclass)) {
+            this.uclasses.push(uclass);
+            if (this.websocket.readyState == WebSocket.OPEN) {
+                this.websocketSend.registerUclass(uclass);
             }
-            uclass = uclass.toString();
-            if (! this.uclasses.includes(uclass)) {
-                this.uclasses.push(uclass);
-                this.websocket.send(
-                    JSON.stringify(
-                        {
-                            action: 'register_uclass',
-                            website: this.website,
-                            uclass: uclass
-                        }
-                    )
-                );
-            }
-        };
-        if (this.websocket.readyState != WebSocket.OPEN) {
-            this.websocket.onopen = () => tmpAddClass();
-        } else {
-            tmpAddClass();
         }
+    }
+
+    registerAllUidsAndUclasses() {
+        if (this.websocketSend.wasOpen) return;
+        this.websocketSend.registerUid(this.userid);
+        this.uclasses.forEach(element => {
+            this.websocketSend.registerUclass(element);
+        });
     }
 
     showNotification(msg, status = null) {

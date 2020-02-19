@@ -12,8 +12,6 @@ import multiprocessing
 
 logging.basicConfig()
 
-STATE = {"value": 0}
-
 WEBSITES = {}
 ALL_USERS = {}
 USERS = {}
@@ -31,6 +29,8 @@ async def send_notifications(website, uclass, notification):
 def register_user(website, uid, websocket):
     if not website in USERS:
         USERS[website] = {}
+    if "users" in ALL_USERS[websocket] and ALL_USERS[websocket]["users"] != uid:
+        USERS[website].pop(ALL_USERS[websocket]["users"])
     USERS[website][uid] = websocket
     ALL_USERS[websocket]["users"] = uid
     ALL_USERS[websocket]["website"] = website
